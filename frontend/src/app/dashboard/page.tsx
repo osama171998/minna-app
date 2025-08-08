@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import api from "@/services/api";
+import { useRouter } from "next/navigation";
 
 interface Post {
   caption: string;
@@ -30,6 +31,7 @@ export default function DashboardPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
+  const router = useRouter();
 
   const handleScrapeByDate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +55,7 @@ export default function DashboardPage() {
         }
       );
       setPosts(response.data);
+      localStorage.setItem("posts", JSON.stringify(response.data));
       setSuccess("Scraping completed successfully!");
     } catch (error: any) {
       if (error.response?.data?.detail) {
@@ -182,6 +185,12 @@ export default function DashboardPage() {
                   </li>
                 ))}
               </ul>
+              <Button
+                onClick={() => router.push("/analysis")}
+                className="mt-4"
+              >
+                Analyze Posts
+              </Button>
             </div>
           )}
         </CardContent>

@@ -33,9 +33,10 @@ export default function AnalysisPage() {
     setError("");
     try {
       const token = localStorage.getItem("token");
+      const posts = JSON.parse(localStorage.getItem("posts") || "[]");
       const response = await api.post(
         "/analysis/",
-        {},
+        posts,
         {
           headers: {
             Authorization: `Bearer ${token}`,

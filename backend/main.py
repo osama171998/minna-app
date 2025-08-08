@@ -1,13 +1,15 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.database import connect_to_mongo, close_mongo_connection
-from app.api.v1 import auth, users
+from app.api.v1 import auth, users, instagram, analysis
 
 # Create an API router
 api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
+api_router.include_router(instagram.router, prefix="/instagram", tags=["instagram"])
+api_router.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
 
 # Define the health check endpoint
 @api_router.get("/health")

@@ -20,6 +20,7 @@ async def register_user(user: UserCreate):
             detail="Email already registered",
         )
     created_user = await repository.create_user(user=user)
+    created_user["_id"] = str(created_user["_id"])
     return created_user
 
 @router.post("/login/access-token")

@@ -25,3 +25,7 @@ class User(UserBase):
     class Config:
         populate_by_name = True
         json_encoders = {ObjectId: str}
+
+class UserUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
