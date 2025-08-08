@@ -35,7 +35,7 @@ export default function LoginForm() {
         },
       });
       localStorage.setItem("token", response.data.access_token);
-      router.push("/");
+      router.push("/dashboard");
     } catch (error: any) {
       setError(error.response?.data?.detail || "An error occurred");
     }
