@@ -15,6 +15,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import api from "@/services/api";
 
+interface Post {
+  caption: string;
+  likes: number;
+  shares: number;
+  viewCount: number;
+}
+
 export default function DashboardPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -22,19 +29,21 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   const handleScrapeByDate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
     setLoading(true);
+    setPosts([]);
     try {
       if (!startDate || !endDate) {
         setError("Please select a start and end date.");
         return;
       }
       const token = localStorage.getItem("token");
-      await api.post(
+      const response = await api.post(
         "/instagram/scrape-by-date",
         { start_date: startDate, end_date: endDate },
         {
@@ -43,7 +52,8 @@ export default function DashboardPage() {
           },
         }
       );
-      setSuccess("Scraping started successfully!");
+      setPosts(response.data);
+      setSuccess("Scraping completed successfully!");
     } catch (error: any) {
       if (error.response?.data?.detail) {
         const errorMsg = error.response.data.detail
@@ -63,9 +73,10 @@ export default function DashboardPage() {
     setError("");
     setSuccess("");
     setLoading(true);
+    setPosts([]);
     try {
       const token = localStorage.getItem("token");
-      await api.post(
+      const response = await api.post(
         "/instagram/scrape-by-links",
         { post_links: postLinks.split("\n") },
         {
@@ -74,7 +85,8 @@ export default function DashboardPage() {
           },
         }
       );
-      setSuccess("Scraping started successfully!");
+      setPosts(response.data);
+      setSuccess("Scraping completed successfully!");
     } catch (error: any) {
       setError(error.response?.data?.detail || "An error occurred");
     } finally {
@@ -149,6 +161,29 @@ export default function DashboardPage() {
           </Tabs>
           {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
           {success && <p className="text-green-500 text-sm mt-4">{success}</p>}
+          {posts.length > 0 && (
+            <div className="mt-4">
+              <h2 className="text-xl font-bold">Scraped Posts</h2>
+              <ul>
+                {posts.map((post, index) => (
+                  <li key={index} className="mt-2">
+                    <p>
+                      <strong>Caption:</strong> {post.caption}
+                    </p>
+                    <p>
+                      <strong>Likes:</strong> {post.likes}
+                    </p>
+                    <p>
+                      <strong>Shares:</strong> {post.shares}
+                    </p>
+                    <p>
+                      <strong>Views:</strong> {post.viewCount}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
